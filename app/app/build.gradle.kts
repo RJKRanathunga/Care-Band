@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.play.services.maps)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.okhttp)
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
