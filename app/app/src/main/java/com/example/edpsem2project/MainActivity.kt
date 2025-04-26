@@ -23,9 +23,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.edpsem2project.ui.theme.EDPSem2ProjectTheme
-import com.example.edpsem2project.ui.theme.primary_Screens.MainScreen
-import com.example.edpsem2project.ui.theme.primary_Screens.SettingsScreen
-import com.example.edpsem2project.ui.theme.secondary_Screens.GoogleMapScreen
+import com.example.edpsem2project.primary_Screens.MainScreen
+import com.example.edpsem2project.primary_Screens.SettingsScreen
+import com.example.edpsem2project.secondary_Screens.GoogleMapScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

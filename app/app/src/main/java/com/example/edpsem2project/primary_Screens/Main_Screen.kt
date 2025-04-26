@@ -1,4 +1,4 @@
-package com.example.edpsem2project.ui.theme.primary_Screens
+package com.example.edpsem2project.primary_Screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
