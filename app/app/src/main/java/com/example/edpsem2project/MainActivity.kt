@@ -42,29 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
-//        bluetoothPermissionLauncher = registerForActivityResult(
-//            ActivityResultContracts.RequestPermission()
-//        ) { isGranted ->
-//            if (isGranted) {
-//                Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission granted")
-//            } else {
-//                Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission denied")
-//            }
-//        }
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_SCAN), 1)
-//        }
-//        if (ContextCompat.checkSelfPermission(
-//                this, // Replace `this` with the appropriate context if needed
-//                Manifest.permission.BLUETOOTH_CONNECT
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-//        } else {
-//            Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission already granted")
-//        }
+        // Request Bluetooth permissions
         multiplePermissionsLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
