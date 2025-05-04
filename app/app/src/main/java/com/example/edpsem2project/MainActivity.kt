@@ -37,7 +37,6 @@ import androidx.core.app.ActivityCompat
 import com.example.edpsem2project.utils.BluetoothViewModel
 
 class MainActivity : ComponentActivity() {
-//    private lateinit var bluetoothPermissionLauncher: androidx.activity.result.ActivityResultLauncher<String>
     private lateinit var multiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

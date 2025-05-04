@@ -104,23 +104,7 @@ fun MainScreen(navController: NavController) {
         Button(
             onClick = {navController.navigate("map_screen")}
         ) {
-            Text(text = "Open Maps")
-        }
-        Button(
-            onClick = {
-//                val lastLocation = getLastLocation()
-//                Log.d("redis", "Last location: $lastLocation")
-                getLastLocation { locations ->
-                    if (locations.isNotEmpty()) {
-                        val loc = locations[0]
-                        Log.d("redis", "Fetched location: ${loc.latitude}, ${loc.longitude}")
-                    } else {
-                        Log.d("redis", "No location found.")
-                    }
-                }
-            }
-        ) {
-            Text(text = "Get Last Location")
+            Text(text = "Detect Location")
         }
     }
 }
