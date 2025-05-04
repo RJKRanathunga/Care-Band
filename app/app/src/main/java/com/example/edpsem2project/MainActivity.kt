@@ -1,6 +1,8 @@
 package com.example.edpsem2project
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,10 +29,75 @@ import com.example.edpsem2project.ui.theme.EDPSem2ProjectTheme
 import com.example.edpsem2project.primary_Screens.MainScreen
 import com.example.edpsem2project.primary_Screens.SettingsScreen
 import com.example.edpsem2project.secondary_Screens.GoogleMapScreen
+import android.Manifest
+import android.app.Activity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import com.example.edpsem2project.utils.BluetoothViewModel
 
 class MainActivity : ComponentActivity() {
+//    private lateinit var bluetoothPermissionLauncher: androidx.activity.result.ActivityResultLauncher<String>
+    private lateinit var multiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
+//        bluetoothPermissionLauncher = registerForActivityResult(
+//            ActivityResultContracts.RequestPermission()
+//        ) { isGranted ->
+//            if (isGranted) {
+//                Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission granted")
+//            } else {
+//                Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission denied")
+//            }
+//        }
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_SCAN), 1)
+//        }
+//        if (ContextCompat.checkSelfPermission(
+//                this, // Replace `this` with the appropriate context if needed
+//                Manifest.permission.BLUETOOTH_CONNECT
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            bluetoothPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+//        } else {
+//            Log.d("Bluetooth1", "BLUETOOTH_CONNECT permission already granted")
+//        }
+        multiplePermissionsLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val connectGranted = permissions[Manifest.permission.BLUETOOTH_CONNECT] ?: false
+            val scanGranted = permissions[Manifest.permission.BLUETOOTH_SCAN] ?: false
+
+            if (connectGranted) {
+                Log.d("Bluetooth1", "BLUETOOTH_CONNECT granted")
+            } else {
+                Log.d("Bluetooth1", "BLUETOOTH_CONNECT denied")
+            }
+
+            if (scanGranted) {
+                Log.d("Bluetooth1", "BLUETOOTH_SCAN granted")
+            } else {
+                Log.d("Bluetooth1", "BLUETOOTH_SCAN denied")
+            }
+        }
+        val permissionsToRequest = mutableListOf<String>()
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            multiplePermissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        }
+
+
+
         enableEdgeToEdge()
         setContent {
             EDPSem2ProjectTheme {

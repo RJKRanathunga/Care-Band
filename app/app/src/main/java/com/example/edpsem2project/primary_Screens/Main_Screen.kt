@@ -1,18 +1,31 @@
 package com.example.edpsem2project.primary_Screens
 
+import android.Manifest
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothSocket
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.edpsem2project.REDIS_PASSWORD
 import com.example.edpsem2project.REDIS_USERNAME
@@ -26,6 +39,96 @@ import java.io.IOException
 
 data class Location(val latitude: Double, val longitude: Double)
 data class RedisWrapper(val result: List<String>)
+
+
+//@Composable
+//fun BluetoothSenderUI() {
+//    val context = LocalContext.current
+//    var isConnected by remember { mutableStateOf(false) }
+//    var socket by remember { mutableStateOf<BluetoothSocket?>(null) }
+//    if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+//        ActivityCompat.requestPermissions(context as Activity, arrayOf(android.Manifest.permission.BLUETOOTH_SCAN), 1)
+//    }
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Button(onClick = {
+//            Log.d("Bluetooth1", "Connect button clicked1")
+//            if (!isConnected) {
+//                Log.d("Bluetooth1", "Connect button clicked")
+//
+//                Thread {
+//                    val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+//                    Log.d("Bluetooth1", "Adapter found: $bluetoothAdapter")
+//
+//                    val device = if (ActivityCompat.checkSelfPermission(
+//                            context,
+//                            Manifest.permission.BLUETOOTH_CONNECT
+//                        ) != PackageManager.PERMISSION_GRANTED
+//                    ) {
+//                        Log.d("Bluetooth1", "Permission not granted for BLUETOOTH_CONNECT")
+//                        return@Thread
+//                    } else {
+//                        Log.d("Bluetooth1", "Permission granted for BLUETOOTH_CONNECT")
+//                        bluetoothAdapter?.bondedDevices?.find { it.name == "ESP32_BT_Device" }
+//                    }
+//
+//                    if (device == null) {
+//                        Log.d("Bluetooth1", "ESP32 device not found among bonded devices")
+//                        return@Thread
+//                    } else {
+//                        Log.d("Bluetooth1", "Found bonded device: ${device.name}")
+//                    }
+//
+//                    try {
+//                        val uuid = device.uuids[0].uuid
+//                        Log.d("Bluetooth1", "Using UUID: $uuid")
+//
+//                        val tmpSocket = device.createRfcommSocketToServiceRecord(uuid)
+//                        Log.d("Bluetooth1", "Socket created, cancelling discovery...")
+//                        bluetoothAdapter.cancelDiscovery()
+//
+//                        Log.d("Bluetooth1", "Trying to connect socket...")
+//                        tmpSocket.connect()
+//                        Log.d("Bluetooth1", "Socket connected successfully!")
+//
+//                        socket = tmpSocket
+//                        isConnected = true
+//                    } catch (e: IOException) {
+//                        Log.e("Bluetooth1", "Socket connection failed", e)
+//                    }
+//                }.start()
+//            } else {
+//                Log.d("Bluetooth1", "Already connected")
+//            }
+//        }, enabled = ! isConnected) {
+//            Text(if (isConnected) "Connected" else "Connect")
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Button(onClick = {
+//            Log.d("Bluetooth1", "Send button clicked")
+//
+//            Thread {
+//                try {
+//                    val message = "Hello ESP32\n"
+//                    Log.d("Bluetooth1", "Sending message: $message")
+//                    socket?.outputStream?.write(message.toByteArray())
+//                    Log.d("Bluetooth1", "Message sent")
+//                } catch (e: IOException) {
+//                    Log.e("Bluetooth1", "Failed to send message", e)
+//                }
+//            }.start()
+//        }, enabled = isConnected) {
+//            Text("Send Message")
+//        }
+//    }
+//}
+
 
 
 fun getLastLocation(onResult: (List<Location>) -> Unit) {
