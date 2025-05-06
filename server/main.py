@@ -1,21 +1,11 @@
 import os
 from flask import Flask, request, jsonify
+from FCM_functions import notify_all
 
 app = Flask(__name__)
 
 # Set your API key as an environment variable on Render.
 API_KEY = os.getenv('API_KEY')
-
-# Log in to huggingface and grant authorization to huggingchat
-# EMAIL = os.getenv('Email')
-# PASSWD = os.getenv('PassWord')
-# cookie_path_dir = "./cookies/"  # NOTE: trailing slash (/) is required to avoid errors
-# sign = Login(EMAIL, PASSWD)
-# cookies = sign.login(cookie_dir_path=cookie_path_dir, save_cookies=True)
-
-# Create your ChatBot
-# chatbot = hugchat.ChatBot(cookies=cookies.get_dict())  # or cookie_path="usercookies/<email>.json"
-
 
 # Function to authenticate API key.
 def authenticate_api_key(func):
@@ -38,8 +28,10 @@ def chat():
         if not message:
             return jsonify({'error': 'Message is required'}), 400
 
+        if message == "test1":
+            notify_all("Hi","This is a test message")
+
         # response = chatbot.chat(message)
-        print(type(message))
         return jsonify(str(message))
 
     except Exception as e:
