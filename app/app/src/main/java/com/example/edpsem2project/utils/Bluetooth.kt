@@ -71,4 +71,8 @@ class BluetoothViewModel : ViewModel() {
             Log.e("Bluetooth", "Send failed", e)
         }
     }
+
+    fun disConnect(){
+        _isConnected.value = false
+    }
 }

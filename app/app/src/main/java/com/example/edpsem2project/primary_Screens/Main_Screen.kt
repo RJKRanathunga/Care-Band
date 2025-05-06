@@ -1,11 +1,13 @@
 package com.example.edpsem2project.primary_Screens
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,9 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.edpsem2project.REDIS_PASSWORD
 import com.example.edpsem2project.REDIS_USERNAME
+import com.example.edpsem2project.utils.BluetoothViewModel
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -90,9 +94,14 @@ fun getLastLocation(onResult: (List<Location>) -> Unit) {
 }
 
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun MainScreen(navController: NavController) {
     // Main screen content goes here
+    val context = LocalContext.current
+    val viewModel: BluetoothViewModel = viewModel(LocalContext.current as ComponentActivity)
+    val isConnected by viewModel.isConnected
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,6 +109,20 @@ fun MainScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
+        // Connect to Bluetooth
+        Button(onClick = {
+            Log.d("Bluetooth1", "Connect button clicked1")
+            viewModel.connectToBluetooth(context)
+        },enabled = !isConnected) {
+            Text(if (isConnected) "Connected" else "Connect")
+        }
+        Button(onClick = {
+            viewModel.disConnect()
+        },enabled = isConnected) {
+            Text("Disconnect")
+        }
+
+        // Get the last location and open map screen
         Text("Get the last location")
         Button(
             onClick = {navController.navigate("map_screen")}

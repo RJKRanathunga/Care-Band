@@ -82,9 +82,7 @@ fun WifiInputPanel(onSubmit: (String, String) -> Unit) {
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun SettingsScreen(navController: NavController) {
-    val context = LocalContext.current
     val viewModel: BluetoothViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val isConnected by viewModel.isConnected
 
     Column(
         modifier = Modifier
@@ -98,18 +96,54 @@ fun SettingsScreen(navController: NavController) {
             modifier = Modifier.padding(16.dp)
         )
 
-        Button(onClick = {
-            Log.d("Bluetooth1", "Connect button clicked1")
-            viewModel.connectToBluetooth(context)
-        },enabled = !isConnected) {
-            Text(if (isConnected) "Connected" else "Connect")
-        }
-
         WifiInputPanel { ssid, password ->
             // Handle the WiFi SSID and password here
-            val jsonData = """{"ssid": "$ssid", "password": "$password"}"""
+            val jsonData = """{"ssid": "$ssid", "password": "$password" ,"command": "connect_wifi"}"""
             Log.d("Bluetooth1", "Prepared JSON data: $jsonData")
             viewModel.sendData(jsonData)
+        }
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "confirm_home"}""")
+            }
+        ){
+            Text("Confirm Home")
+        }
+
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "clear_memory"}""")
+            }
+        ){
+            Text("Reset memory")
+        }
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "shut_down"}""")
+            }
+        ){
+            Text("Shut down")
+        }
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "restart"}""")
+            }
+        ){
+            Text("Restart")
+        }
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "connect_saved_wifi"}""")
+            }
+        ){
+            Text("Connect saved WiFi")
+        }
+        Button(
+            onClick = {
+                viewModel.sendData("""{"command": "potential_zone_left"}""")
+            }
+        ) {
+            Text(text = "Potential Zone Left")
         }
     }
 }
