@@ -17,6 +17,7 @@ okhttp = "4.11.0"
 playServicesMaps = "19.2.0"
 navigationCompose = "2.8.9"
 upstashRedis = "1.0.5"
+firebaseMessagingKtx = "24.1.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -43,6 +44,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 upstash-redis = { module = "io.upstash:upstash-redis", version.ref = "upstashRedis" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
