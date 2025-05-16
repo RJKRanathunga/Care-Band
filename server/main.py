@@ -28,6 +28,8 @@ def chat():
         if not message:
             return jsonify({'error': 'Message is required'}), 400
 
+        print("message: ",message)
+
         if message == "test1":
             notify_all("Hi","This is a test message")
 
