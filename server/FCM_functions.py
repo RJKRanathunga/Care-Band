@@ -7,17 +7,43 @@ import os
 UPSTASH_REDIS_URL = os.getenv('UPSTASH_REDIS_URL')
 UPSTASH_REDIS_TOKEN = os.getenv('UPSTASH_REDIS_TOKEN')
 
-cred = credentials.Certificate("/etc/secrets/edpsemester2-private-key.json")
-firebase_admin.initialize_app(cred)
+firebase_apps = {}
 
-def get_all_tokens():
-    url = f"{UPSTASH_REDIS_URL}/smembers/fcm_tokens"
+def initialize_firebase_apps():
+    user_keys = {
+        "oshada":"/etc/secrets/oshada-private-key.json",
+        "nayanajith":"/etc/secrets/nayanajith-private-key.json",
+        "pemitha": "/etc/secrets/oshada-private-key.json"
+    }
+
+    for user, key_path in user_keys.items():
+        cred = credentials.Certificate(key_path)
+        app = firebase_admin.initialize_app(cred,name=user)
+        firebase_apps[user] = app
+
+initialize_firebase_apps()
+
+def add_tokens(user_id,token):
+    if token:
+        url = f"{UPSTASH_REDIS_URL}/sadd/fcm_tokens_{user_id}/{token}"
+        headers = {"Authorization": UPSTASH_REDIS_TOKEN}
+        requests.get(url,headers=headers)
+        print(f"Added a token to user: {user_id}")
+
+def get_all_tokens(user_id):
+    url = f"{UPSTASH_REDIS_URL}/smembers/fcm_tokens_{user_id}"
     headers = {"Authorization": UPSTASH_REDIS_TOKEN}
     response = requests.get(url, headers=headers)
-    print(response.json().get("result", []))
-    return response.json().get("result", [])
+    tokens = response.json().get("result", [])
+    if not tokens:
+        print(f"Not found any tokens for user {user_id}")
+    return tokens
 
-def send_fcm_message(token, title, body):
+def send_fcm_message(user_id,token, title, body):
+    app = firebase_apps.get(user_id)
+    if not app:
+        raise ValueError(f"No firebase app found for user: {user_id}")
+
     # Construct the message
     message = messaging.Message(
         token=token,
@@ -39,8 +65,8 @@ def remove_invalid_token(token):
     requests.get(url, headers=headers)
     print(f"Removed invalid token: {token}")
 
-def notify_all(title, body):
-    tokens = get_all_tokens()
+def notify_apps(user_id,title, body):
+    tokens = get_all_tokens(user_id)
     print(f"Sending notification to {len(tokens)} devices...")
     for token in tokens:
-        send_fcm_message(token, title, body)
+        send_fcm_message(user_id,token, title, body)

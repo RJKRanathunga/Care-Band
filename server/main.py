@@ -1,17 +1,19 @@
 import os
 from flask import Flask, request, jsonify
-from FCM_functions import notify_all
+from FCM_functions import notify_apps, add_tokens
 
 app = Flask(__name__)
 
 # Set your API key as an environment variable on Render.
-API_KEY = os.getenv('API_KEY')
+API_KEY_OSHADA = os.getenv('API_KEY_OSHADA')
+API_KEY_NAYANAJITH =  os.getenv('API_KEY_NAYANAJITH')
+API_KEY_PEMITHA = os.getenv('API_KEY_PEMITHA')
 
 # Function to authenticate API key.
 def authenticate_api_key(func):
     def wrapper(*args, **kwargs):
         api_key = request.headers.get('x-api-key')
-        if api_key and (api_key == API_KEY):
+        if api_key and (api_key == API_KEY_OSHADA or api_key==API_KEY_PEMITHA or api_key == API_KEY_NAYANAJITH):
             return func(*args, **kwargs)
         else:
             return jsonify({'error': 'Forbidden: Invalid API key'}), 403
@@ -23,17 +25,30 @@ def authenticate_api_key(func):
 @authenticate_api_key  # This secures the '/' route with the API key check.
 def chat():
     try:
-        message = request.headers.get('message')
+        data = request.get_json()
+        api_key = request.headers.get('x-api-key')
+        message = data["message"]
 
         if not message:
             return jsonify({'error': 'Message is required'}), 400
 
         print("message: ",message)
 
-        if message == "test1":
-            notify_all("Hi","This is a test message")
+        if api_key == API_KEY_OSHADA:
+            if message == "save_token":
+                add_tokens("oshada",data["token"])
+            notify_apps("oshada","Hi","This is a test message.")
 
-        # response = chatbot.chat(message)
+        if api_key == API_KEY_NAYANAJITH:
+            if message == "save_token":
+                add_tokens("nayanajith",data["token"])
+            notify_apps("nayanajith","Bag","Bag stolen.")
+
+        if api_key == API_KEY_PEMITHA:
+            if message == "save_token":
+                add_tokens("pemitha",data["token"])
+            notify_apps("pemitha","Elephant","Elephant in the village.")
+
         return jsonify(str(message))
 
     except Exception as e:
