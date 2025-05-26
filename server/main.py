@@ -19,7 +19,7 @@ def authenticate_api_key(func):
     return wrapper
 
 
-@app.route('/')
+@app.route('/',methods = ["POST","GET"])
 @authenticate_api_key  # This secures the '/' route with the API key check.
 def chat():
     try:
