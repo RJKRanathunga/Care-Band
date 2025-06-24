@@ -7,13 +7,13 @@ app = Flask(__name__)
 # Set your API key as an environment variable on Render.
 API_KEY_OSHADA = os.getenv('API_KEY_OSHADA')
 API_KEY_NAYANAJITH =  os.getenv('API_KEY_NAYANAJITH')
-API_KEY_PEMITHA = os.getenv('API_KEY_PAWARA')
+API_KEY_HIRUNA = os.getenv('API_KEY_HIRUNA')
 
 # Function to authenticate API key.
 def authenticate_api_key(func):
     def wrapper(*args, **kwargs):
-        api_key = request.headers.get('x-api-key')
-        if api_key and (api_key == API_KEY_OSHADA or api_key==API_KEY_PEMITHA or api_key == API_KEY_NAYANAJITH):
+        api_key = request.headers.get('my-api-key')
+        if api_key and (api_key == API_KEY_OSHADA or api_key==API_KEY_HIRUNA or api_key == API_KEY_NAYANAJITH):
             return func(*args, **kwargs)
         else:
             return jsonify({'error': 'Forbidden: Invalid API key'}), 403
@@ -46,11 +46,11 @@ def chat():
             else:
                 notify_apps("nayanajith","Bag","Bag stolen.")
 
-        if api_key == API_KEY_PEMITHA:
+        if api_key == API_KEY_HIRUNA:
             if message == "save_token":
-                add_tokens("pawara",data["token"])
+                add_tokens("hiruna",data["token"])
             else:
-                notify_apps("pawara","Elephant","Elephant in the village.")
+                notify_apps("hiruna","Elephant","Elephant in the village.")
 
         return jsonify(str(message))
 
