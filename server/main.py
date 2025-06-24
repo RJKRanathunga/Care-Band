@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Set your API key as an environment variable on Render.
 API_KEY_OSHADA = os.getenv('API_KEY_OSHADA')
 API_KEY_NAYANAJITH =  os.getenv('API_KEY_NAYANAJITH')
-API_KEY_PEMITHA = os.getenv('API_KEY_PEMITHA')
+API_KEY_PEMITHA = os.getenv('API_KEY_PAWARA')
 
 # Function to authenticate API key.
 def authenticate_api_key(func):
@@ -37,17 +37,20 @@ def chat():
         if api_key == API_KEY_OSHADA:
             if message == "save_token":
                 add_tokens("oshada",data["token"])
-            notify_apps("oshada","Hi","This is a test message.")
+            else:
+                notify_apps("oshada","Hi","This is a test message.")
 
         if api_key == API_KEY_NAYANAJITH:
             if message == "save_token":
                 add_tokens("nayanajith",data["token"])
-            notify_apps("nayanajith","Bag","Bag stolen.")
+            else:
+                notify_apps("nayanajith","Bag","Bag stolen.")
 
         if api_key == API_KEY_PEMITHA:
             if message == "save_token":
-                add_tokens("pemitha",data["token"])
-            notify_apps("pemitha","Elephant","Elephant in the village.")
+                add_tokens("pawara",data["token"])
+            else:
+                notify_apps("pawara","Elephant","Elephant in the village.")
 
         return jsonify(str(message))
 
