@@ -13,7 +13,7 @@ def initialize_firebase_apps():
     user_keys = {
         "oshada":"/etc/secrets/oshada-private-key.json",
         "nayanajith":"/etc/secrets/nayanajith-private-key.json",
-        "pemitha": "/etc/secrets/oshada-private-key.json"
+        "hiruna": "/etc/secrets/hiruna-private-key.json"
     }
 
     for user, key_path in user_keys.items():
