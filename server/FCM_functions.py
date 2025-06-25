@@ -27,7 +27,9 @@ def add_tokens(user_id,token):
     if token:
         url = f"{UPSTASH_REDIS_URL}/sadd/fcm_tokens_{user_id}/{token}"
         headers = {"Authorization": UPSTASH_REDIS_TOKEN}
-        requests.get(url,headers=headers)
+        response = requests.post(url,headers=headers)
+        print(response.status_code)
+        print("Response Body: ",response.text)
         print(f"Added a token to user: {user_id}")
 
 def get_all_tokens(user_id):
