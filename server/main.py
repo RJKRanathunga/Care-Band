@@ -25,7 +25,7 @@ def authenticate_api_key(func):
 @authenticate_api_key  # This secures the '/' route with the API key check.
 def chat():
     try:
-        data = request.get_json()
+        data = request.get_json()["data"]
         api_key = request.headers.get('my-api-key')
         command = data["command"]
         message = data["message"]
