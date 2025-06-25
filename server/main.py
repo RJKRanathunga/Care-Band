@@ -26,7 +26,7 @@ def authenticate_api_key(func):
 def chat():
     try:
         data = request.get_json()
-        api_key = request.headers.get('x-api-key')
+        api_key = request.headers.get('my-api-key')
         message = data["message"]
 
         if not message:
