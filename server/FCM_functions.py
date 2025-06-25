@@ -20,6 +20,7 @@ def initialize_firebase_apps():
         cred = credentials.Certificate(key_path)
         app = firebase_admin.initialize_app(cred,name=user)
         firebase_apps[user] = app
+    print("Firebase apps initialized:",len(firebase_apps),"apps found")
 
 initialize_firebase_apps()
 
