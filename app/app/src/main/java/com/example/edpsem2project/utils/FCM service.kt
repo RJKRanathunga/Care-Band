@@ -1,23 +1,45 @@
 package com.example.edpsem2project.utils
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import com.example.edpsem2project.MainActivity
+import com.example.edpsem2project.R
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 
 fun sendTokenToServer(token: String) {
-    val url = "https://model-quagga-28525.upstash.io/sadd/fcm_tokens/$token"
+    val url = "https://edpsemester2.onrender.com"
+
+    val json = """
+        {
+            "token": "$token",
+            "command": "save_token"
+        }
+    """.trimIndent()
+
+    val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
     val request = Request.Builder()
         .url(url)
-        .header("Authorization", "Bearer AW9tAAIncDE4NGQ3NDY3YjM2NjY0OTEzYTEwNzYwZWM4YjgxZjA0YnAxMjg1MjU")
+        .header("Content-Type", "application/json")
+        .header("my-api-key","hsdjsiwkqoo1k2o1llso0ssldhfuw9eikmf")
+        .post(requestBody)
         .build()
 
     OkHttpClient().newCall(request).enqueue(object : Callback {
@@ -51,21 +73,37 @@ fun getFirebaseToken() {
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        val type = remoteMessage.data["type"]
+        val message = remoteMessage.data["message"]
         Log.d("FCM", "Message received: $remoteMessage")
         Log.d("FCM", "Message received: ${remoteMessage.data}")
-        Log.d("FCM", "Message received: ${remoteMessage.data["body"]}")
-        when (type) {
-            "Pomodoro" -> {
+        Log.d("FCM", "Message received: ${remoteMessage.data["message"]}")
+        createNotificationChannel()
+        when (message) {
+            "fall_detected" -> {
+                val intent = Intent("com.example.edpsem2project.FALL_DETECTED")
+                sendBroadcast(intent)
+                Log.d("FallDetected", "Broadcast sent with action FALL_DETECTED")
+            }
+            "absolute_house_left" -> {
 
             }
-            "Short break" -> {
-
-            }
-            "Long break" -> {
+            "possible_house_left" -> {
 
             }
         }
+    }
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            "default_channel",
+            "Default Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for default notifications"
+        }
+
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
     }
 
     override fun onNewToken(token: String) {

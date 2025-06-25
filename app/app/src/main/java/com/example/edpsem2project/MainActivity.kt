@@ -31,13 +31,28 @@ import com.example.edpsem2project.primary_Screens.SettingsScreen
 import com.example.edpsem2project.secondary_Screens.GoogleMapScreen
 import android.Manifest
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
+import com.example.edpsem2project.primary_Screens.DeveloperScreen
+import com.example.edpsem2project.secondary_Screens.FallDetectedOverlay
+//import com.example.edpsem2project.secondary_Screens.FallDetectedScreen
 import com.example.edpsem2project.utils.BluetoothViewModel
+import com.example.edpsem2project.utils.getFirebaseToken
 
 class MainActivity : ComponentActivity() {
     private lateinit var multiplePermissionsLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var fallDetectedReceiver: BroadcastReceiver
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,6 +62,7 @@ class MainActivity : ComponentActivity() {
         ) { permissions ->
             val connectGranted = permissions[Manifest.permission.BLUETOOTH_CONNECT] ?: false
             val scanGranted = permissions[Manifest.permission.BLUETOOTH_SCAN] ?: false
+            val notification = permissions[Manifest.permission.POST_NOTIFICATIONS] ?: false
 
             if (connectGranted) {
                 Log.d("Bluetooth1", "BLUETOOTH_CONNECT granted")
@@ -59,6 +75,12 @@ class MainActivity : ComponentActivity() {
             } else {
                 Log.d("Bluetooth1", "BLUETOOTH_SCAN denied")
             }
+
+            if (notification) {
+                Log.d("Bluetooth1", "POST_NOTIFICATIONS granted")
+            } else {
+                Log.d("Bluetooth1", "POST_NOTIFICATIONS denied")
+            }
         }
         val permissionsToRequest = mutableListOf<String>()
 
@@ -69,6 +91,10 @@ class MainActivity : ComponentActivity() {
             permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
         }
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         if (permissionsToRequest.isNotEmpty()) {
             multiplePermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         }
@@ -77,12 +103,40 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            var showOverlay by remember { mutableStateOf(false) }
+            fallDetectedReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    if (intent?.action == "com.example.edpsem2project.FALL_DETECTED") {
+                        Log.d("FallDetectedReceiver", "Fall detected broadcast received")
+                        showOverlay = true
+                    }
+                }
+            }
+            registerReceiver(
+                fallDetectedReceiver,
+                IntentFilter("com.example.edpsem2project.FALL_DETECTED"),
+                Context.RECEIVER_NOT_EXPORTED
+            )
+            if (showOverlay) {
+                FallDetectedOverlay(
+                    onDismiss = { showOverlay = false },
+                    onDetectLocation = {
+                        // Add logic to detect location here
+                    }
+                )
+            }
+
             EDPSem2ProjectTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { contentPadding ->
                     ProjectMain(modifier = Modifier.padding(contentPadding))
                 }
             }
         }
+        getFirebaseToken()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(fallDetectedReceiver)
     }
 }
 
@@ -93,7 +147,7 @@ fun ProjectMain(modifier: Modifier) {
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
-                items = listOf("Main", "Settings"),
+                items = listOf("Main", "Settings", "Developer"),
                 navController = navController
             )
         }
@@ -104,8 +158,10 @@ fun ProjectMain(modifier: Modifier) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("main_screen") { MainScreen(navController) }
+            composable("developer_screen") {DeveloperScreen(navController)}
             composable("settings_screen") { SettingsScreen(navController) }
             composable("map_screen") { GoogleMapScreen() }
+//            composable("fall_screen") { FallDetectedScreen(navController) }
         }
     }
 }
@@ -123,6 +179,7 @@ fun BottomNavigationBar(
             val icon = when (item){
                 "Main" -> painterResource(R.drawable.home)
                 "Settings" -> painterResource(R.drawable.settings)
+                "Developer" -> painterResource(R.drawable.developer)
                 else -> painterResource(R.drawable.ic_launcher_foreground)
             }
             NavigationBarItem(
@@ -145,6 +202,7 @@ fun String.toRoute(): String {
     return when (this) {
         "Main" -> "main_screen"
         "Settings" -> "settings_screen"
+        "Developer" -> "developer_screen"
         else -> "main_screen"
     }
 }

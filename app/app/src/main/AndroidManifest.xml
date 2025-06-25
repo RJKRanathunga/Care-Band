@@ -4,6 +4,8 @@
 
     <!-- Required permissions for the app -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
@@ -43,6 +45,12 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <receiver android:name=".utils.FallDetectedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.edpsem2project.FALL_DETECTED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

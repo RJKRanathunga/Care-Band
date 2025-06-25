@@ -1,19 +1,19 @@
 package com.example.edpsem2project.primary_Screens
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothSocket
-import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,13 +23,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.edpsem2project.R
 import com.example.edpsem2project.REDIS_PASSWORD
 import com.example.edpsem2project.REDIS_USERNAME
 import com.example.edpsem2project.utils.BluetoothViewModel
@@ -94,13 +97,10 @@ fun getLastLocation(onResult: (List<Location>) -> Unit) {
 }
 
 
-@SuppressLint("ContextCastToActivity")
 @Composable
 fun MainScreen(navController: NavController) {
     // Main screen content goes here
-    val context = LocalContext.current
-    val viewModel: BluetoothViewModel = viewModel(LocalContext.current as ComponentActivity)
-    val isConnected by viewModel.isConnected
+    var isUserAtHome by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -108,26 +108,71 @@ fun MainScreen(navController: NavController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        // Connect to Bluetooth
-        Button(onClick = {
-            Log.d("Bluetooth1", "Connect button clicked1")
-            viewModel.connectToBluetooth(context)
-        },enabled = !isConnected) {
-            Text(if (isConnected) "Connected" else "Connect")
+    ) {
+        if (! isUserAtHome) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Get the last location and open map screen
+                Text(
+                    text = "User is away from Home",
+                    fontSize = 34.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 40.sp // Adjust line height for better spacing
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.locate),
+                    contentDescription = "Locate",
+                    modifier = Modifier.size(400.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color(0xFF1976D2), // Blue color
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .clickable { navController.navigate("map_screen") }
+                        .padding(vertical = 12.dp, horizontal = 16.dp), // Inner padding
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Detect Location",
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+
+                    )
+                }
+            }
         }
-        Button(onClick = {
-            viewModel.disConnect()
-        },enabled = isConnected) {
-            Text("Disconnect")
+        else{
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Get the last location and open map screen
+                Text(
+                    text = "User is at Home",
+                    fontSize = 34.sp,
+                    textAlign = TextAlign.Center
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.at_home),
+                    contentDescription = "Locate",
+                    modifier = Modifier.size(400.dp)
+                )
+            }
         }
 
-        // Get the last location and open map screen
-        Text("Get the last location")
+        // Toggle isUserAtHome state button
         Button(
-            onClick = {navController.navigate("map_screen")}
+            onClick = {
+                isUserAtHome = !isUserAtHome
+            },
+            modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text(text = "Detect Location")
+            Text("Toggle User Location")
         }
     }
 }
