@@ -55,7 +55,7 @@ def send_fcm_message(user_id,token, title, body):
 
     # Send the message
     try:
-        response = messaging.send(message)
+        response = messaging.send(message,app=app)
         print(f"Successfully sent message: {response}")
     except Exception as e:
         print(f"Error sending message: {e}")
