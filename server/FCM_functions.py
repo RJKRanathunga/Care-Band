@@ -50,7 +50,7 @@ def send_fcm_message(user_id,token, title, body):
     # Construct the message
     message = messaging.Message(
         token=token,
-        data={"title":title, "body":body}
+        data={"title":title, "message":body}
     )
 
     # Send the message

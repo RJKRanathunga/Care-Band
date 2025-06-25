@@ -27,30 +27,31 @@ def chat():
     try:
         data = request.get_json()
         api_key = request.headers.get('my-api-key')
+        command = data["command"]
         message = data["message"]
 
-        if not message:
-            return jsonify({'error': 'Message is required'}), 400
+        if not message or not command:
+            return jsonify({'error': 'Message and command is required'}), 400
 
         print("message: ",message)
 
         if api_key == API_KEY_OSHADA:
-            if message == "save_token":
+            if command == "save_token":
                 add_tokens("oshada",data["token"])
-            else:
-                notify_apps("oshada","Hi","This is a test message.")
+            elif command == "notify":
+                notify_apps("oshada","Title",message)
 
         if api_key == API_KEY_NAYANAJITH:
-            if message == "save_token":
+            if command == "save_token":
                 add_tokens("nayanajith",data["token"])
-            else:
-                notify_apps("nayanajith","Bag","Bag stolen.")
+            elif command == "notify":
+                notify_apps("nayanajith","Bag",message)
 
         if api_key == API_KEY_HIRUNA:
-            if message == "save_token":
+            if command == "save_token":
                 add_tokens("hiruna",data["token"])
-            else:
-                notify_apps("hiruna","Elephant","Elephant in the village.")
+            elif command == "notify":
+                notify_apps("hiruna","Elephant",message)
 
         return jsonify(str(message))
 
