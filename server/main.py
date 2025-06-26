@@ -12,7 +12,7 @@ API_KEY_HIRUNA = os.getenv('API_KEY_HIRUNA')
 # Function to authenticate API key.
 def authenticate_api_key(func):
     def wrapper(*args, **kwargs):
-        api_key = request.get_json()["data"]["my-api-key"]
+        api_key = request.get_json()["my-api-key"]
         if api_key and (api_key == API_KEY_OSHADA or api_key==API_KEY_HIRUNA or api_key == API_KEY_NAYANAJITH):
             return func(*args, **kwargs)
         else:
@@ -25,7 +25,7 @@ def authenticate_api_key(func):
 @authenticate_api_key  # This secures the '/' route with the API key check.
 def chat():
     try:
-        data = request.get_json()["data"]
+        data = request.get_json()
         api_key = data['my-api-key']
         command = data["command"]
         message = data["message"]
