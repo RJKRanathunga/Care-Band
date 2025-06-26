@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.edpsem2project.MainActivity
+import com.example.edpsem2project.OverlayActivity
 import com.example.edpsem2project.R
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -78,19 +79,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d("FCM", "Message received: ${remoteMessage.data}")
         Log.d("FCM", "Message received: ${remoteMessage.data["message"]}")
         createNotificationChannel()
-        when (message) {
-            "fall_detected" -> {
-                val intent = Intent("com.example.edpsem2project.FALL_DETECTED")
-                sendBroadcast(intent)
-                Log.d("FallDetected", "Broadcast sent with action FALL_DETECTED")
-            }
-            "absolute_house_left" -> {
-
-            }
-            "possible_house_left" -> {
-
-            }
+        val intent = Intent(this, OverlayActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("message", message)
         }
+        startActivity(intent)
+//        when (message) {
+//            "fall_detected" -> {
+//                val intent = Intent(this, OverlayActivity::class.java).apply {
+//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                    putExtra("message", message)
+//                }
+//                startActivity(intent)
+//            }
+//            "absolute_house_left" -> {
+//
+//            }
+//            "possible_house_left" -> {
+//
+//            }
+//        }
     }
 
     private fun createNotificationChannel() {

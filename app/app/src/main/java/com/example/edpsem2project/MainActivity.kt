@@ -30,23 +30,12 @@ import com.example.edpsem2project.primary_Screens.MainScreen
 import com.example.edpsem2project.primary_Screens.SettingsScreen
 import com.example.edpsem2project.secondary_Screens.GoogleMapScreen
 import android.Manifest
-import android.app.Activity
 import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.core.app.ActivityCompat
 import com.example.edpsem2project.primary_Screens.DeveloperScreen
-import com.example.edpsem2project.secondary_Screens.FallDetectedOverlay
-//import com.example.edpsem2project.secondary_Screens.FallDetectedScreen
-import com.example.edpsem2project.utils.BluetoothViewModel
 import com.example.edpsem2project.utils.getFirebaseToken
 
 class MainActivity : ComponentActivity() {
@@ -103,29 +92,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            var showOverlay by remember { mutableStateOf(false) }
-            fallDetectedReceiver = object : BroadcastReceiver() {
-                override fun onReceive(context: Context?, intent: Intent?) {
-                    if (intent?.action == "com.example.edpsem2project.FALL_DETECTED") {
-                        Log.d("FallDetectedReceiver", "Fall detected broadcast received")
-                        showOverlay = true
-                    }
-                }
-            }
-            registerReceiver(
-                fallDetectedReceiver,
-                IntentFilter("com.example.edpsem2project.FALL_DETECTED"),
-                Context.RECEIVER_NOT_EXPORTED
-            )
-            if (showOverlay) {
-                FallDetectedOverlay(
-                    onDismiss = { showOverlay = false },
-                    onDetectLocation = {
-                        // Add logic to detect location here
-                    }
-                )
-            }
-
             EDPSem2ProjectTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { contentPadding ->
                     ProjectMain(modifier = Modifier.padding(contentPadding))
