@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.edpsem2project.secondary_Screens.GoogleMapScreen
 
 class OverlayActivity : ComponentActivity() {
     private lateinit var mediaPlayer: MediaPlayer
@@ -39,6 +45,7 @@ class OverlayActivity : ComponentActivity() {
         // Retrieve the message from the intent
         val message = intent.getStringExtra("message") ?: "No message"
         setContent {
+            var showStatic by remember { mutableStateOf(false) }
             MaterialTheme {
                 // Use insets-aware Scaffold
                 Scaffold(
@@ -46,39 +53,63 @@ class OverlayActivity : ComponentActivity() {
 
                 ) { contentPadding ->
 
-                    when (message) {
-                        "fall_detected" -> {
-                            WarningDetectedOverlay(modifier = Modifier.padding(contentPadding),onDismiss = {
-                                // Stop sound and finish activity when dismiss button pressed
-                                safelyReleaseMediaPlayer()
-                                finish()
+                    if (showStatic){
+                        GoogleMapScreen()
+                    } else {
+                        when (message) {
+                            "fall_detected" -> {
+                                WarningDetectedOverlay(
+                                    modifier = Modifier.padding(contentPadding),
+                                    onDismiss = {
+                                        // Stop sound and finish activity when dismiss button pressed
+                                        safelyReleaseMediaPlayer()
+                                        finish()
+                                    },
+                                    title = "Fall Detected",
+                                    imageResId = R.drawable.fall,
+                                    locate = {
+                                        safelyReleaseMediaPlayer()
+                                        showStatic = true
+                                    }
+                                )
                             }
-                                ,title = "Fall Detected",
-                                imageResId = R.drawable.fall
-                            )
-                        }
-                        "absolute_house_left" -> {
-                            WarningDetectedOverlay(modifier = Modifier.padding(contentPadding),onDismiss = {
-                                // Stop sound and finish activity when dismiss button pressed
-                                safelyReleaseMediaPlayer()
-                                finish()
+
+                            "absolute_house_left" -> {
+                                WarningDetectedOverlay(
+                                    modifier = Modifier.padding(contentPadding),
+                                    onDismiss = {
+                                        // Stop sound and finish activity when dismiss button pressed
+                                        safelyReleaseMediaPlayer()
+                                        finish()
+                                    },
+                                    title = "User left the House",
+                                    imageResId = R.drawable.lost,
+                                    locate = {
+                                        safelyReleaseMediaPlayer()
+                                        showStatic = true
+                                    }
+                                )
                             }
-                                ,title = "User left the House",
-                                imageResId = R.drawable.lost
-                            )
-                        }
-                        "possible_house_left" -> {
-                            WarningDetectedOverlay(modifier = Modifier.padding(contentPadding),onDismiss = {
-                                // Stop sound and finish activity when dismiss button pressed
-                                safelyReleaseMediaPlayer()
-                                finish()
+
+                            "possible_house_left" -> {
+                                WarningDetectedOverlay(
+                                    modifier = Modifier.padding(contentPadding),
+                                    onDismiss = {
+                                        // Stop sound and finish activity when dismiss button pressed
+                                        safelyReleaseMediaPlayer()
+                                        finish()
+                                    },
+                                    title = "User might have left the House",
+                                    imageResId = R.drawable.possible_lost,
+                                    locate = {
+                                        safelyReleaseMediaPlayer()
+                                        showStatic = true
+                                    }
+                                )
                             }
-                                ,title = "User might have left the House",
-                                imageResId = R.drawable.possible_lost
-                            )
                         }
                     }
-                                    }
+                }
             }
         }
     }
@@ -104,7 +135,7 @@ class OverlayActivity : ComponentActivity() {
 @Composable
 fun WarningDetectedOverlay(
     modifier: Modifier, onDismiss: () -> Unit,title:String,
-    imageResId:Int
+    imageResId:Int, locate:() -> Unit
 ) {
     val context = LocalContext.current
     Column(
@@ -123,6 +154,24 @@ fun WarningDetectedOverlay(
             contentDescription = "Fall Detected",
             modifier = Modifier.size(400.dp)
         )
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(20.dp)
+                .background(
+                    color = Color(0xFF514ce0), // Blue color
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .clickable {
+                    locate()
+                }
+                .padding(vertical = 12.dp, horizontal = 16.dp), // Inner padding
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Locate",
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
         Box(
             modifier = Modifier
                 .background(
