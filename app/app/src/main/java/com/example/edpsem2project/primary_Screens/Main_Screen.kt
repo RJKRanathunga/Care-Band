@@ -141,11 +141,18 @@ data class RedisResult(val result: String)
 
 @Composable
 fun MainScreen(navController: NavController) {
+    val context = LocalContext.current
     var isUserAtHome by remember { mutableStateOf(true) }
     var isDataFetched by remember { mutableStateOf(false) }
 
     // Fetch user location and status only once
     LaunchedEffect(Unit) {
+        val userLoggedEmail = getLoggedInEmail(context)
+        if (userLoggedEmail.isNullOrEmpty()) {
+            // Navigate to login screen if no user is logged in
+            navController.navigate("login_screen")
+            return@LaunchedEffect
+        }
         userAtHouse { isAtHome ->
             isUserAtHome = isAtHome
             isDataFetched = true

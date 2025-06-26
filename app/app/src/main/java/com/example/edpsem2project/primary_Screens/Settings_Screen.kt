@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +79,16 @@ fun SettingsScreen(navController: NavController) {
     val viewModel: BluetoothViewModel = viewModel()
     val isConnected by viewModel.isConnected
     val scrollState = rememberScrollState()
+    var userLoggedEmail by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(Unit) {
+        userLoggedEmail = getLoggedInEmail(context)
+        if (userLoggedEmail.isNullOrEmpty()) {
+            // Navigate to login screen if no user is logged in
+            navController.navigate("login_screen")
+            return@LaunchedEffect
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(16.dp)) {
         Column(
@@ -198,7 +210,7 @@ fun SettingsScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (viewModel.isConnected.value) Color(0xFF1976D2) else Color.Gray,
+                        color = if (viewModel.isConnected.value) Color(0xFF3eb5b5) else Color.Gray,
                         shape = RoundedCornerShape(10.dp)
                     )
                     .then(
@@ -209,6 +221,56 @@ fun SettingsScreen(navController: NavController) {
             ) {
                 Text(
                     text = "RESET",
+                    color = Color(0xFFb04537),
+                    textAlign = TextAlign.Center
+
+                )
+            }
+        }
+        //**********************************************************************************************
+        Column( // Reset memory in the device
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp) // Padding around the border
+                .border(
+                    width = 3.dp,
+                    color = Color(0xFFb04537),
+                    shape = RoundedCornerShape(16.dp) // Rounded border
+                )
+                .padding(16.dp), // Padding inside the border
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){ // Connect to bluetooth
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.log_out),
+                    contentDescription = "bluetooth",
+                    modifier = Modifier.size(width = 50.dp, height = 50.dp)
+                )
+                Text(
+                    text = "Log Out",
+                    color = Color.Red
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = if (! userLoggedEmail.isNullOrEmpty()) Color(0xFF3eb5b5) else Color.Gray,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    .then(
+                        if (! userLoggedEmail.isNullOrEmpty()) Modifier.clickable {
+                            deleteLoggedInEmail(context)
+                            navController.navigate("main_screen")
+                        } else Modifier
+                    )
+                    .padding(vertical = 12.dp, horizontal = 16.dp), // Inner padding
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "LOG OUT",
                     color = Color(0xFFb04537),
                     textAlign = TextAlign.Center
 

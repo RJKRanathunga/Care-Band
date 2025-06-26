@@ -35,7 +35,10 @@ import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.example.edpsem2project.primary_Screens.DeveloperScreen
+import com.example.edpsem2project.primary_Screens.LoginScreen
 import com.example.edpsem2project.utils.getFirebaseToken
 
 class MainActivity : ComponentActivity() {
@@ -88,8 +91,6 @@ class MainActivity : ComponentActivity() {
             multiplePermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         }
 
-
-
         enableEdgeToEdge()
         setContent {
             EDPSem2ProjectTheme {
@@ -127,7 +128,7 @@ fun ProjectMain(modifier: Modifier) {
             composable("developer_screen") {DeveloperScreen(navController)}
             composable("settings_screen") { SettingsScreen(navController) }
             composable("map_screen") { GoogleMapScreen() }
-//            composable("fall_screen") { FallDetectedScreen(navController) }
+            composable("login_screen") { LoginScreen(navController) }
         }
     }
 }
