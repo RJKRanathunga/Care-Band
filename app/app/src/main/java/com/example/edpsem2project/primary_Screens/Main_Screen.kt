@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,11 +97,61 @@ fun getLastLocation(onResult: (List<Location>) -> Unit) {
     })
 }
 
+fun userAtHouse(onResult: (Boolean) -> Unit) {
+    val client = OkHttpClient()
+    val url = "https://${REDIS_USERNAME}/hget/userAtHome/user1" // assuming hash name is 'location' and key is 'user1'
+
+    val request = Request.Builder()
+        .url(url)
+        .addHeader("Authorization", "Bearer $REDIS_PASSWORD")
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.d("redis", "Failed to fetch value: ${e.message}")
+            onResult(false)
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            response.use {
+                if (!response.isSuccessful) {
+                    Log.d("redis", "Unexpected response: ${response.code}")
+                    onResult(false)
+                } else {
+                    val body = response.body?.string()?.trim()
+                    Log.d("redis", "Raw response: $body")
+
+                    try {
+                        val json = Gson().fromJson(body, RedisResult::class.java)
+                        val result = json.result == "1"
+                        onResult(result)
+                    } catch (e: Exception) {
+                        Log.e("redis", "Failed to parse JSON: ${e.message}")
+                        onResult(false)
+                    }
+                }
+            }
+        }
+    })
+}
+
+data class RedisResult(val result: String)
+
+
 
 @Composable
 fun MainScreen(navController: NavController) {
-    // Main screen content goes here
     var isUserAtHome by remember { mutableStateOf(true) }
+    var isDataFetched by remember { mutableStateOf(false) }
+
+    // Fetch user location and status only once
+    LaunchedEffect(Unit) {
+        userAtHouse { isAtHome ->
+            isUserAtHome = isAtHome
+            isDataFetched = true
+            Log.d("redis", "User at home: $isUserAtHome")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -109,71 +160,73 @@ fun MainScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (! isUserAtHome) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Get the last location and open map screen
-                Text(
-                    text = "User is away from Home",
-                    fontSize = 34.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 40.sp // Adjust line height for better spacing
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.locate),
-                    contentDescription = "Locate",
-                    modifier = Modifier.size(400.dp)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color(0xFF1976D2), // Blue color
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        .clickable { navController.navigate("map_screen") }
-                        .padding(vertical = 12.dp, horizontal = 16.dp), // Inner padding
-                    contentAlignment = Alignment.Center
+        if (isDataFetched) {
+            if (!isUserAtHome) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Detect Location",
-                        color = Color.White,
+                        text = "User is away from Home",
+                        fontSize = 34.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 40.sp
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.locate),
+                        contentDescription = "Locate",
+                        modifier = Modifier.size(400.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFF1976D2),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .clickable { navController.navigate("map_screen") }
+                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Detect Location",
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "User is at Home",
+                        fontSize = 34.sp,
                         textAlign = TextAlign.Center
-
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.at_home),
+                        contentDescription = "Locate",
+                        modifier = Modifier.size(400.dp)
                     )
                 }
             }
-        }
-        else{
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Get the last location and open map screen
-                Text(
-                    text = "User is at Home",
-                    fontSize = 34.sp,
-                    textAlign = TextAlign.Center
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.at_home),
-                    contentDescription = "Locate",
-                    modifier = Modifier.size(400.dp)
-                )
-            }
+        } else {
+            Text(
+                text = "Loading...",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center
+            )
         }
 
-        // Toggle isUserAtHome state button
-        Button(
-            onClick = {
-                isUserAtHome = !isUserAtHome
-            },
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("Toggle User Location")
-        }
+//        Button(
+//            onClick = {
+//                isUserAtHome = !isUserAtHome
+//            },
+//            modifier = Modifier.padding(top = 16.dp)
+//        ) {
+//            Text("Toggle User Location")
+//        }
     }
 }
 
