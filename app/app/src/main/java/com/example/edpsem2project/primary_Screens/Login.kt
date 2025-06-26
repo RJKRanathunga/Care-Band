@@ -69,12 +69,14 @@ fun LoginScreen(navController: NavController) {
                 onClick = {
                     if (email.isBlank() || password.isBlank()) {
                         errorMessage = "Email and password cannot be empty"
-                    } else {
+                    }else if(email=="inovatech@gmail.com" && password=="12345"){
                         // ✅ Mock login success
                         saveLoggedInEmail(context = context, email = email)
                         navController.navigate("main_screen") {
                             popUpTo("login") { inclusive = true }
                         }
+                    } else {
+                        errorMessage = "Invalid email or password"
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

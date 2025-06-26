@@ -2,21 +2,15 @@ package com.example.edpsem2project.utils
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.example.edpsem2project.MainActivity
 import com.example.edpsem2project.OverlayActivity
-import com.example.edpsem2project.R
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -78,27 +72,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         Log.d("FCM", "Message received: $remoteMessage")
         Log.d("FCM", "Message received: ${remoteMessage.data}")
         Log.d("FCM", "Message received: ${remoteMessage.data["message"]}")
-        createNotificationChannel()
+//        createNotificationChannel()
         val intent = Intent(this, OverlayActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("message", message)
         }
         startActivity(intent)
-//        when (message) {
-//            "fall_detected" -> {
-//                val intent = Intent(this, OverlayActivity::class.java).apply {
-//                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//                    putExtra("message", message)
-//                }
-//                startActivity(intent)
-//            }
-//            "absolute_house_left" -> {
-//
-//            }
-//            "possible_house_left" -> {
-//
-//            }
-//        }
     }
 
     private fun createNotificationChannel() {
