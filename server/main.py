@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from FCM_functions import notify_apps, add_tokens
+from FCM_functions import notify_apps, add_tokens, send_test_messages
 
 app = Flask(__name__)
 
@@ -52,6 +52,8 @@ def chat():
                 add_tokens("hiruna",data["token"])
             elif command == "notify":
                 notify_apps("hiruna","Elephant",message)
+            elif command == "test":
+                send_test_messages(message)
 
         return jsonify(str(message))
 
