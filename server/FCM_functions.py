@@ -4,19 +4,23 @@ from firebase_admin import credentials,messaging
 import os
 
 # === CONFIGURATION ===
-UPSTASH_REDIS_URL_OSHADA = os.getenv('UPSTASH_REDIS_URL_OSHADA')
-UPSTASH_REDIS_TOKEN_OSHADA = os.getenv('UPSTASH_REDIS_TOKEN_OSHADA')
+USERS = ["OSHADA", "HIRUNA", "NAYANAJITH"]
 
-UPSTASH_REDIS_URL_HIRUNA = os.getenv('UPSTASH_REDIS_TOKEN_HIRUNA')
-UPSTASH_REDIS_TOKEN_HIRUNA = os.getenv('UPSTASH_REDIS_TOKEN_HIRUNA')
+UPSTASH_REDIS = {
+    user: {
+        "url": os.getenv(f"UPSTASH_REDIS_URL_{user}"),
+        "storage_token": os.getenv(f"UPSTASH_REDIS_TOKEN_{user}")
+    }
+    for user in USERS
+}
 
 firebase_apps = {}
 
 def initialize_firebase_apps():
     user_keys = {
-        "oshada":"/etc/secrets/oshada-private-key.json",
-        "nayanajith":"/etc/secrets/nayanajith-private-key.json",
-        "hiruna": "/etc/secrets/hiruna-private-key.json"
+        "OSHADA":"/etc/secrets/oshada-private-key.json",
+        "NAYANAJITH":"/etc/secrets/nayanajith-private-key.json",
+        "HIRUNA": "/etc/secrets/hiruna-private-key.json"
     }
 
     for user, key_path in user_keys.items():
@@ -28,17 +32,21 @@ def initialize_firebase_apps():
 initialize_firebase_apps()
 
 def add_tokens(user_id,token):
+    url = UPSTASH_REDIS[user_id]["url"]
+    storage_token = UPSTASH_REDIS[user_id]["storage_token"]
     if token:
-        url = f"{UPSTASH_REDIS_URL_OSHADA}/sadd/fcm_tokens_{user_id}/{token}"
-        headers = {"Authorization": UPSTASH_REDIS_TOKEN_OSHADA}
+        url = f"{url}/sadd/fcm_tokens_{user_id}/{token}"
+        headers = {"Authorization": storage_token}
         response = requests.post(url,headers=headers)
         print(response.status_code)
         print("Response Body: ",response.text)
         print(f"Added a token to user: {user_id}")
 
 def get_all_tokens(user_id):
-    url = f"{UPSTASH_REDIS_URL_OSHADA}/smembers/fcm_tokens_{user_id}"
-    headers = {"Authorization": UPSTASH_REDIS_TOKEN_OSHADA}
+    url = UPSTASH_REDIS[user_id]["url"]
+    storage_token = UPSTASH_REDIS[user_id]["storage_token"]
+    url = f"{url}/smembers/fcm_tokens_{user_id}"
+    headers = {"Authorization": storage_token}
     response = requests.get(url, headers=headers)
     tokens = response.json().get("result", [])
     if not tokens:
@@ -65,9 +73,11 @@ def send_fcm_message(user_id,token, title, body):
 
 
 
-def remove_invalid_token(token):
-    url = f"{UPSTASH_REDIS_URL_OSHADA}/srem/fcm_tokens/{token}"
-    headers = {"Authorization": UPSTASH_REDIS_TOKEN_OSHADA}
+def remove_invalid_token(user_id, token):
+    url = UPSTASH_REDIS[user_id]["url"]
+    storage_token = UPSTASH_REDIS[user_id]["storage_token"]
+    url = f"{url}/srem/fcm_tokens/{token}"
+    headers = {"Authorization": storage_token}
     requests.get(url, headers=headers)
     print(f"Removed invalid token: {token}")
 
@@ -77,8 +87,10 @@ def notify_apps(user_id,title, body):
     for token in tokens:
         send_fcm_message(user_id,token, title, body)
 
-def send_test_messages(message):
-    url = f"{UPSTASH_REDIS_URL_HIRUNA}/lpush/test_messages/{message}"
-    headers = {"Authorization": UPSTASH_REDIS_TOKEN_HIRUNA}
+def send_test_messages(user_id, message):
+    url = UPSTASH_REDIS[user_id]["url"]
+    storage_token = UPSTASH_REDIS[user_id]["storage_token"]
+    url = f"{url}/lpush/test_messages/{message}"
+    headers = {"Authorization": storage_token}
     response = requests.post(url, headers=headers)
     print(response.status_code)

@@ -37,23 +37,25 @@ def chat():
 
         if api_key == API_KEY_OSHADA:
             if command == "save_token":
-                add_tokens("oshada",data["token"])
+                add_tokens("OSHADA",data["token"])
             elif command == "notify":
-                notify_apps("oshada","Title",message)
+                notify_apps("OSHADA","Title",message)
 
         if api_key == API_KEY_NAYANAJITH:
             if command == "save_token":
-                add_tokens("nayanajith",data["token"])
+                add_tokens("NAYANAJITH",data["token"])
             elif command == "notify":
-                notify_apps("nayanajith","Bag",message)
+                notify_apps("NAYANAJITH","Bag",message)
+            elif command == "test":
+                send_test_messages("NAYANAJITH",message)
 
         if api_key == API_KEY_HIRUNA:
             if command == "save_token":
-                add_tokens("hiruna",data["token"])
+                add_tokens("HIRUNA",data["token"])
             elif command == "notify":
-                notify_apps("hiruna","Elephant",message)
+                notify_apps("HIRUNA","Elephant",message)
             elif command == "test":
-                send_test_messages(message)
+                send_test_messages("HIRUNA",message)
 
         return jsonify(str(message))
 
