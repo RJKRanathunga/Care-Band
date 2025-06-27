@@ -40,6 +40,8 @@ def chat():
                 add_tokens("OSHADA",message)
             elif command == "notify":
                 notify_apps("OSHADA","Title",message)
+            elif command == "test":
+                send_test_messages("OSHADA",message)
 
         if api_key == API_KEY_NAYANAJITH:
             if command == "save_token":
