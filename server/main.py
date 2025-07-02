@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from FCM_functions import notify_apps, add_tokens, send_test_messages
+from FCM_functions import notify_apps, add_tokens, send_test_messages, save_location
 
 app = Flask(__name__)
 
@@ -42,6 +42,8 @@ def chat():
                 notify_apps("OSHADA","Title",message)
             elif command == "test":
                 send_test_messages("OSHADA",message)
+            elif command == "save_location":
+                save_location("OSHADA",message)
 
         if api_key == API_KEY_NAYANAJITH:
             if command == "save_token":
@@ -50,6 +52,8 @@ def chat():
                 notify_apps("NAYANAJITH","Bag",message)
             elif command == "test":
                 send_test_messages("NAYANAJITH",message)
+            elif command == "save_location":
+                save_location("NAYANAJITH",message)
 
         if api_key == API_KEY_HIRUNA:
             if command == "save_token":
@@ -58,6 +62,8 @@ def chat():
                 notify_apps("HIRUNA","Elephant",message)
             elif command == "test":
                 send_test_messages("HIRUNA",message)
+            elif command == "save_location":
+                save_location("HIRUNA",message)
 
         return jsonify(str(message))
 

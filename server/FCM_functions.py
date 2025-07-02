@@ -94,3 +94,12 @@ def send_test_messages(user_id, message):
     headers = {"Authorization": storage_token}
     response = requests.post(url, headers=headers)
     print(response.status_code)
+
+
+def save_location(user_id,location):
+    url = UPSTASH_REDIS[user_id]["url"]
+    storage_token = UPSTASH_REDIS[user_id]["storage_token"]
+    url = f"{url}/lpush/location/{location}"
+    headers = {"Authorization": storage_token}
+    response = requests.post(url, headers=headers)
+    print(response.status_code)
