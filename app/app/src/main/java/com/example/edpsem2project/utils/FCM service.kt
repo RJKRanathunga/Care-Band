@@ -22,18 +22,18 @@ fun sendTokenToServer(token: String) {
     val url = "https://edpsemester2.onrender.com"
 
     val json = """
-        {
-            "token": "$token",
-            "command": "save_token"
-        }
-    """.trimIndent()
+    {
+        "message": "$token",
+        "command": "save_token",
+        "my-api-key": "hsdjsiwkqoo1k2o1llso0ssldhfuw9eikmf"
+    }
+""".trimIndent()
 
     val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
     val request = Request.Builder()
         .url(url)
         .header("Content-Type", "application/json")
-        .header("my-api-key","hsdjsiwkqoo1k2o1llso0ssldhfuw9eikmf")
         .post(requestBody)
         .build()
 
