@@ -12,6 +12,7 @@ API_KEY_HIRUNA = os.getenv('API_KEY_HIRUNA')
 # Function to authenticate API key.
 def authenticate_api_key(func):
     def wrapper(*args, **kwargs):
+        print("data:",request.get_json())
         api_key = request.get_json()["my-api-key"]
         if api_key and (api_key == API_KEY_OSHADA or api_key==API_KEY_HIRUNA or api_key == API_KEY_NAYANAJITH):
             return func(*args, **kwargs)
@@ -33,7 +34,7 @@ def chat():
         if not message or not command:
             return jsonify({'error': 'Message and command is required'}), 400
 
-        print("message: ",message)
+        # print("message: ",message)
 
         if api_key == API_KEY_OSHADA:
             if command == "save_token":
