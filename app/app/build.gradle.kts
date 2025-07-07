@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.edpsem2project"
-        minSdk = 31
+        minSdk = 27
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
