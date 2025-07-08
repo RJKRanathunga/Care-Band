@@ -2,13 +2,13 @@ package com.example.edpsem2project.primary_Screens
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,8 +40,11 @@ import com.example.edpsem2project.utils.BluetoothViewModel
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 
@@ -135,6 +138,40 @@ fun userAtHouse(onResult: (Boolean) -> Unit) {
     })
 }
 
+fun setUserAtHouse(value: Boolean, onResult: (Boolean) -> Unit) {
+    val client = OkHttpClient()
+    val url = "https://${REDIS_USERNAME}/hset/userAtHome/user1"
+
+    val json = "1"
+    val requestBody = json.toRequestBody("application/json".toMediaType())
+
+    val request = Request.Builder()
+        .url(url)
+        .addHeader("Authorization", "Bearer $REDIS_PASSWORD")
+        .post(requestBody)
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.d("redis", "Failed to set value: ${e.message}")
+            onResult(false)
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            response.use {
+                if (response.isSuccessful) {
+                    Log.d("redis", "Successfully set value")
+                    onResult(true)
+                } else {
+                    Log.d("redis", "Failed with response code: ${response.code}")
+                    onResult(false)
+                }
+            }
+        }
+    })
+}
+
+
 data class RedisResult(val result: String)
 
 
@@ -196,6 +233,31 @@ fun MainScreen(navController: NavController) {
                     ) {
                         Text(
                             text = "Detect Location",
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFF139e1f),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .clickable { setUserAtHouse(true) { success ->
+                                if (success) {
+                                    Log.d("redis", "User marked as at house")
+                                    isUserAtHome=true
+                                } else {
+                                    Log.d("redis", "Failed to update user location")
+                                }
+                            } }
+                            .padding(vertical = 12.dp, horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Found User",
                             color = Color.White,
                             textAlign = TextAlign.Center
                         )
