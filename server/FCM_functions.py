@@ -103,3 +103,33 @@ def save_location(user_id,location):
     headers = {"Authorization": storage_token}
     response = requests.post(url, headers=headers)
     print(response.status_code)
+
+import requests
+import json
+import os
+
+UPSTASH_REDIS_URL = "https://<your-endpoint>.upstash.io"
+UPSTASH_REDIS_TOKEN = "your-access-token"
+LIST_KEY = "debug_logs"
+
+def save_to_redis_list(data):
+    """
+    Takes a dictionary or JSON-serializable object and saves it as a string
+    into a Redis list for debugging.
+    """
+    UPSTASH_REDIS_URL_AKHILA = os.getenv("AKHILA_URL")
+    UPSTASH_REDIS_TOKEN_AKHILA = os.getenv("AKHILA_TOKEN")
+    json_str = json.dumps(data)  # Convert to JSON string
+
+    response = requests.post(
+        f"{UPSTASH_REDIS_URL_AKHILA}/lpush/test",
+        headers={
+            "Authorization": f"Bearer {UPSTASH_REDIS_TOKEN_AKHILA}"
+        },
+        data=json_str
+    )
+
+    if response.status_code == 200:
+        print("Saved to Redis list.")
+    else:
+        print("Failed to save:", response.text)
