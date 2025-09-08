@@ -79,7 +79,12 @@ fun SettingsScreen(navController: NavController) {
     val viewModel: BluetoothViewModel = viewModel()
     val isConnected by viewModel.isConnected
     val scrollState = rememberScrollState()
+    val scrollState2 = rememberScrollState()
     var userLoggedEmail by remember { mutableStateOf<String?>(null) }
+    val consoleOutput by viewModel.consoleOutput
+    LaunchedEffect(consoleOutput) {
+        scrollState.animateScrollTo(scrollState2.maxValue)
+    }
 
     LaunchedEffect(Unit) {
         userLoggedEmail = getLoggedInEmail(context)
@@ -132,6 +137,27 @@ fun SettingsScreen(navController: NavController) {
                         viewModel.disConnect()
                     },
                     modifier = Modifier.weight(1f)
+                )
+            }
+
+            Text(
+                text = "Device Console Output",
+                color = Color.White,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background(Color.Black, RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.Gray)
+                    .padding(8.dp)
+                    .verticalScroll(scrollState2)
+            ) {
+                Text(
+                    text = viewModel.consoleOutput.value,
+                    color = Color.Green
                 )
             }
         }
@@ -276,6 +302,16 @@ fun SettingsScreen(navController: NavController) {
 
                 )
             }
+        }
+        Button(
+            onClick = {
+                // Handle button click
+                viewModel.sendData("""{"command": "restart"}""")
+            },
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            enabled = viewModel.isConnected.value
+        ){
+            Text("Restart Device")
         }
     }
 }

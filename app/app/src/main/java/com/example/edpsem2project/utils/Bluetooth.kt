@@ -13,11 +13,14 @@ import java.io.IOException
 class BluetoothViewModel : ViewModel() {
     private val _isConnected = mutableStateOf(false)
     val isConnected = _isConnected
+    val consoleOutput = mutableStateOf("")
+
 
     private var _socket: BluetoothSocket? = null
 
     fun connectToBluetooth(context: Context) {
         if (_isConnected.value) return
+        _socket?.close()
 
         Thread {
             val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -41,8 +44,13 @@ class BluetoothViewModel : ViewModel() {
             } else {
                 Log.d("Bluetooth1", "Found bonded device: ${device.name}")
             }
+
             try {
-                val uuid = device.uuids[0].uuid
+                val uuid = device.uuids?.get(0)?.uuid
+                if (uuid == null) {
+                    Log.e("Bluetooth1", "Device UUIDs are null or empty")
+                    return@Thread
+                }
                 Log.d("Bluetooth1", "Using UUID: $uuid")
 
                 val tmpSocket = device.createRfcommSocketToServiceRecord(uuid)
@@ -53,9 +61,9 @@ class BluetoothViewModel : ViewModel() {
                 tmpSocket.connect()
                 Log.d("Bluetooth1", "Socket connected successfully!")
 
-
                 _socket = tmpSocket
                 _isConnected.value = true
+                startListeningForData()
             } catch (e: IOException) {
                 Log.e("Bluetooth", "Connection failed", e)
             }
@@ -71,6 +79,31 @@ class BluetoothViewModel : ViewModel() {
             Log.e("Bluetooth", "Send failed", e)
         }
     }
+
+    fun startListeningForData() {
+        Thread {
+            try {
+                val inputStream = _socket?.inputStream
+                val buffer = ByteArray(1024)
+                var bytes: Int
+
+                while (_isConnected.value && inputStream != null) {
+                    bytes = inputStream.read(buffer)
+                    if (bytes > 0) {
+                        val receivedData = String(buffer, 0, bytes)
+                        Log.d("Bluetooth1", "Received: $receivedData")
+                        consoleOutput.value += "ESP32: $receivedData\n"
+
+                    }
+                }
+            } catch (e: IOException) {
+                consoleOutput.value += "Error: ${e.message}\n"
+                Log.e("Bluetooth", "Error receiving data", e)
+            }
+        }.start()
+    }
+
+
 
     fun disConnect(){
         _isConnected.value = false
