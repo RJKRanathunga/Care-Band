@@ -34,7 +34,7 @@ def chat():
         if not message or not command:
             return jsonify({'error': 'Message and command is required'}), 400
 
-        # print("message: ",message)
+        # Three projects use this server
 
         if api_key == API_KEY_OSHADA:
             if command == "save_token":

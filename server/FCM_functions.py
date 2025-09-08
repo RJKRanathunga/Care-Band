@@ -1,7 +1,8 @@
-import requests
 import firebase_admin
 from firebase_admin import credentials,messaging
 import os
+import requests
+import json
 
 # === CONFIGURATION ===
 USERS = ["OSHADA", "HIRUNA", "NAYANAJITH"]
@@ -104,12 +105,6 @@ def save_location(user_id,location):
     response = requests.post(url, headers=headers)
     print(response.status_code)
 
-import requests
-import json
-import os
-
-UPSTASH_REDIS_URL = "https://<your-endpoint>.upstash.io"
-UPSTASH_REDIS_TOKEN = "your-access-token"
 LIST_KEY = "debug_logs"
 
 def save_to_redis_list(data):
