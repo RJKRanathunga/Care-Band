@@ -1,67 +1,93 @@
+# Care Band - ESP32 Firmware
 
----
+This module contains the **ESP32 firmware** for the Care Band wearable device.
 
-# Care Band – ESP32 Device
-
-The **Care Band ESP32 firmware** powers the wearable device for dementia patients.  
-It provides **energy-efficient home detection, GPS fallback, and fall detection**.  
-If the patient leaves home or experiences a fall, caregivers are notified through the mobile app.
+The firmware is responsible for energy efficient home detection, GPS fallback handling, fall detection, and communication with the backend system. When safety conditions are triggered, caregiver notifications are delivered via the mobile application.
 
 ---
 
 ## ✨ Features
-- Learns and stores known Wi-Fi BSSIDs during setup.
-- Checks every 5 minutes if connected to home Wi-Fi.
-- Falls back to nearby BSSIDs if not directly connected.
-- Uses GPS only if Wi-Fi checks fail (energy-efficient).
-- **Fall detection support** with caregiver notification.
-- Sends data to the server via Oracle HTTP → Render.
-- Caregivers notified if the patient:
-  - Might have left home (no Wi-Fi + no GPS).
-  - Has truly left home (confirmed GPS).
-  - Has experienced a fall (location shared).
+
+- Stores and recognizes known Wi-Fi BSSIDs during initial setup
+- Periodically checks (every 5 minutes) for connection to home Wi-Fi
+- Falls back to nearby known BSSIDs if direct connection is unavailable
+- Activates GPS only if Wi-Fi verification fails (energy efficient design)
+- Integrated fall detection with automatic alert triggering
+- Sends device data to the backend through an Oracle HTTP relay → Render server
+- Caregiver notification logic for:
+  - Possible departure from home
+  - Confirmed departure from home (GPS verification)
+  - Fall detected (location included in alert)
+
+---
+
+## 🏗️ Communication Architecture
+
+The ESP32 firmware communicates with the backend through an **Oracle HTTP relay layer** before reaching the Render-hosted Flask server.
+
+### Why an HTTP Relay is Required
+
+The SIM800I GSM module used in this project only supports **basic HTTP requests** and does not support modern HTTPS/TLS connections required by cloud platforms such as Render.
+
+Because of this limitation:
+
+1. The ESP32 sends plain HTTP requests via the SIM800I module.
+2. These requests are received by an Oracle hosted HTTP relay service.
+3. The relay forwards the request securely to the Care Band backend server running on Render (HTTPS).
+4. The server processes the data and triggers caregiver notifications if necessary.
+
+This architecture enables compatibility with SIM800I while maintaining secure communication with the cloud backend.
+
+> Note: The Oracle HTTP relay implementation is not included in this repository.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Platform:** Arduino (C++ for ESP32)  
-- **Modules:** ESP32 Wi-Fi + GPS module + GSM module
-- **Relay:** Oracle HTTP (not included here)  
-- **Backend:** Care Band Server (Flask on Render)
+
+- **Platform:** Arduino framework (C++ for ESP32)
+- **Hardware Modules:**
+  - ESP32 Wi-Fi module
+  - GPS module
+  - GSM (SIM800I) module
+- **Relay Layer:** Oracle HTTP (external service, not included here)
+- **Backend Integration:** Care Band Server (Flask deployed on Render)
 
 ---
 
-## 🚀 Setup
-1. Clone this repository.
-2. Replace the current server credentials with your own.
-3. Flash the firmware to an ESP32 using Arduino IDE.
-4. Ensure Oracle HTTP relay and Care Band Server are running.
+## 🚀 Setup (Firmware Module Only)
+
+1. Clone the monorepo.
+2. Navigate to the `/esp32` directory.
+3. Replace the existing server credentials with your own.
+4. Flash the firmware to an ESP32 using the Arduino IDE.
+5. Ensure the Oracle HTTP relay and Care Band Server are running and accessible.
 
 ---
 
-## 📌 Project Status
-This project was developed as a **Semester 2 Engineering Design Project** by 4 members.  
-It is now closed and no longer actively maintained, but contributions are welcome.
+## 📌 Project Context
+
+Developed as part of a **Semester 2 Engineering Design Project**  
+University of Moratuwa - ENTC Department  
+
+This module is no longer actively maintained.
 
 ---
 
 ## ⚠️ Notes
-- Some hardcoded credentials may exist in code. Replace them before use.  
-- The **Oracle HTTP relay code is not included**; users must set it up themselves.  
 
----
-
-## 👥 Contributors
-- University of Moratuwa – ENTC Department, Semester 2 Project  
-- Team of 4 members (including this repo maintainer)
+- Some hardcoded credentials may exist in historical commits and must be replaced before use.
+- The Oracle HTTP relay implementation is not included in this repository and must be configured separately.
+- Proper hardware wiring and module configuration are required for full functionality.
 
 ---
 
 ## 📜 License
-This project is released under a permissive license:
 
-- You may use, modify, and redistribute this code for personal, educational, or commercial purposes.  
-- Attribution is not required.  
-- However, you may **not re-publish this project as your own work without making substantial changes to the codebase**.  
-- Any reuse should clearly distinguish derivative work from the original Care Band project.
+This module is released under a permissive license.
 
+You are free to:
+
+- Use, modify, and redistribute the code
+- Integrate it into personal, educational, or commercial systems
+
+Attribution is appreciated but not required.

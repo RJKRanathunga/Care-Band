@@ -1,58 +1,66 @@
-# Care Band – Mobile App
+# Care Band - Android Caregiver App
 
-The **Care Band App** is the caregiver-facing Android application of the Care Band system.  
-It allows caregivers to track dementia patients in real time, receive alerts if they leave home, and get notified in case of a fall.
+This module contains the **Android caregiver application** for the Care Band system.
+
+The app enables caregivers to monitor dementia patients in real time, receive safety alerts, and view live location data.
 
 ---
 
 ## ✨ Features
-- Real-time caregiver notifications:
-  - When the patient leaves home.
-  - When a fall is detected.
-- Displays exact GPS location on Google Maps.
-- Cloud-synced data backup every few seconds.
-- Simple caregiver interface.
+
+- Real-time notifications when:
+  - The patient leaves the predefined safe zone
+  - A fall is detected by the wearable device
+- Live GPS location displayed using Google Maps
+- Near real-time cloud synchronization
+- Clean and focused caregiver interface
 
 ---
 
 ## 🛠️ Tech Stack
+
 - **Language:** Kotlin  
-- **Frameworks:** Jetpack Components, Firebase  
-- **APIs:** Google Maps API
+- **Architecture:** Jetpack Components  
+- **Backend Integration:** Firebase  
+- **Maps:** Google Maps SDK  
 
 ---
 
-## 🚀 Setup
-1. Clone this repository.
-2. Add your own **`google-services.json`** file (Firebase project required).
-3. Replace placeholder/expired credentials with your own.
-4. Build and run the project in Android Studio.
+## 🚀 Setup (App Module Only)
+
+1. Clone the monorepo.
+2. Navigate to the `/app` directory.
+3. Add your own `google-services.json` file (Firebase project required).
+4. Replace any placeholder or expired credentials.
+5. Open the `app` module in Android Studio and build.
 
 ---
 
-## 📌 Project Status
-This project was developed as a **Semester 2 Engineering Design Project** by 4 members.  
-It is now closed and no longer actively maintained, but contributions are welcome.
+## 📌 Project Context
+
+Developed as part of a **Semester 2 Engineering Design Project**  
+University of Moratuwa - ENTC Department  
+
+This module is no longer actively maintained.
 
 ---
 
 ## ⚠️ Notes
-- Some hardcoded credentials may exist in commits. They are no longer valid and must be replaced.
-- Images used in the app may come from third-party sites without explicit attribution. Handle with care if reusing.
 
----
-
-## 👥 Contributors
-- University of Moratuwa – ENTC Department, Semester 2 Project  
-- Team of 4 members (including this repo maintainer)
+- Historical commits may contain expired or placeholder credentials.
+- Proper API keys and Firebase configuration are required before running.
+- Some UI assets may originate from third-party sources.
 
 ---
 
 ## 📜 License
-This project is released under a permissive license:
 
-- You may use, modify, and redistribute this code for personal, educational, or commercial purposes.  
-- Attribution is not required.  
-- However, you may **not re-publish this project as your own work without making substantial changes to the codebase**.  
-- Any reuse should clearly distinguish derivative work from the original Care Band project.
+This module is released under a permissive license.
 
+You are free to:
+
+- Use the code for personal, educational, or commercial purposes  
+- Modify and redistribute it  
+- Integrate it into other systems  
+
+Attribution is appreciated but not required.
