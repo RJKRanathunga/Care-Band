@@ -9,6 +9,10 @@ Developed as a Semester 2 Engineering Design Project at the University of Moratu
 ---
 
 ## 📌 Project Overview
+<p align="center">
+  <img src="docs/images/final1.jpg" width="45%">
+  <img src="docs/images/final2.jpg" width="45%">
+</p>
 
 Dementia patients, particularly in advanced stages, are highly vulnerable to wandering and accidental falls. These incidents can lead to serious injury, prolonged exposure outdoors, or life-threatening situations.
 
@@ -91,6 +95,13 @@ The prototype device cost approximately **LKR 8,000**, with a target retail goal
 Care Band demonstrates how IoT based assistive technology can bridge healthcare accessibility gaps using practical engineering solutions.
 
 ---
+
+## 📄 Project Report
+
+The full Engineering Design Project report can be found here:
+
+[Download Project Report](docs/EDP_Project_Report.pdf)
+
 
 ## 👨‍🔬 Team
 
